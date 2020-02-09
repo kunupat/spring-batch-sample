@@ -35,7 +35,7 @@ Remove `key` tag and *its value* completely from the Event Pattern of the batch 
 ```
 
 ## 2. Cloudwatch Rule Changes- `Target` Section 
-Choose `Input Transformer` option under Configure Input section:
+Choose `Input Transformer` option under `Configure Input` section:
  - Enter this in first text box: `{"S3KeyValue":"$.detail.requestParameters.key","S3BucketValue":"$.detail.requestParameters.bucketName"}`
  - Enter this in second text box: `{"Parameters" : {"S3bucket": <S3BucketValue>, "S3key": <S3KeyValue>}}`
  
