@@ -1,4 +1,5 @@
-# Springboot batch sample app with Docker support
+# Running Spring Batch application using AWS Batch 
+How to trigger AWS Batch on S3 upload event & pass S3 BucketName and FileName(key) to the Spring Batch application
 
 Following steps describe how to send S3 source Event MetaData (Bucket Name and File Name) as arguments to a Spring Batch application.
 
