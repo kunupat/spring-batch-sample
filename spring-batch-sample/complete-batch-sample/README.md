@@ -3,6 +3,8 @@ How to trigger AWS Batch on S3 upload event & pass S3 BucketName and FileName(ke
 
 Following steps describe how to send S3 source Event MetaData (Bucket Name and File Name) as arguments to a Spring Batch application.
 
+[Docker Image][1]: `docker pull kunupat/springboot-batch-example`
+
 ## 1. Cloudwatch Rule Changes- `Event Source` Section:
 Remove `key` tag and *its value* completely from the Event Pattern of the batch Cloudwatch Rule. Add `key` tag in case you need to trigger event only when a file with specific name `key` is uploaded to the specified S3 bucket.
   
@@ -57,3 +59,5 @@ public class BatchProcessingApplication {
     }
 }
 ```
+
+[1]: https://hub.docker.com/repository/docker/kunupat/springboot-batch-example
