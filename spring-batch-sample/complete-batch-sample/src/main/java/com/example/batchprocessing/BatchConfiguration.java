@@ -1,13 +1,19 @@
 package com.example.batchprocessing;
 
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecutionListener;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.JobParametersValidator;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.DefaultJobParametersValidator;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
@@ -15,13 +21,11 @@ import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilde
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
-import org.springframework.batch.item.file.mapping.DefaultLineMapper;
-import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 // tag::setup[]
 @Configuration
@@ -34,6 +38,9 @@ public class BatchConfiguration {
     @Autowired
     public StepBuilderFactory stepBuilderFactory;
     // end::setup[]
+    
+    @Autowired
+    private ApplicationArguments applicationArguments;
 
     // tag::readerwriterprocessor[]
     @Bean
@@ -66,9 +73,25 @@ public class BatchConfiguration {
 
     // tag::jobstep[]
     @Bean
-    public Job importUserJob(JobCompletionNotificationListener listener, Step step1) {
-        return jobBuilderFactory.get("importUserJob")
+    public Job importUserJob(JobCompletionNotificationListener listener, Step step1) throws JobParametersInvalidException {
+    	
+    	System.out.println("In importUserJob... ");
+    	
+    	List<String> param1List = applicationArguments.getOptionValues("param1");
+    	 
+    	System.out.println("param1List: " + param1List);
+    	
+    	JobParameters parameters = new JobParametersBuilder()
+    			.addString("param1", param1List.get(0))
+    			.toJobParameters();
+
+    	
+    	
+    	JobParametersValidator jobParametersValidator = new DefaultJobParametersValidator ();
+    	jobParametersValidator.validate(parameters);
+    	return jobBuilderFactory.get("importUserJob")
             .incrementer(new RunIdIncrementer())
+            .validator(jobParametersValidator)
             .listener(listener)
             .flow(step1)
             .end()
